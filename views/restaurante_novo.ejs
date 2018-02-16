@@ -1,0 +1,56 @@
+<% include elements/header %>
+
+    <div class="container">
+        <h2>Novo restaurante</h2>
+        <p><a href="/restaurantes" class="btn btn-primary">Listar restaurantes</a></p>
+
+        <form method="post">
+            <div class="form-group">
+                <label for="nome">Novo restaurante:</label>
+                <input type="text" name="nome" id="nome" class="form-control" placeholder="Nome do Restaurante"/>
+            </div>
+            <div id="map" style="height: 400px;"></div>
+            <input type="hidden" name="lat" id="lat"/>
+            <input type="hidden" name="lng" id="lng"/>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+        </form>
+    </div>
+
+    <script>
+        function updatePosition(lat, lng) {
+            document.getElementById('lat').value = lat;
+            document.getElementById('lng').value = lng;
+            //document.getElementById('lat').value = marker.position.lat();
+            //document.getElementById('lng').value = marker.position.lng();
+        }
+        function initMap() {
+            var initialLocation = {lat: -34.397, lng: 150.644};
+            // Create a map object and specify the DOM element for display.
+            var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 16,
+                    center: initialLocation
+            });
+
+            const marker = new google.maps.Marker({
+                position: initialLocation,
+                map: map,
+                draggable: true
+            })
+
+            if (navigator.geolocation){
+                navigator.geolocation.getCurrentPosition(function(position){
+                    let latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
+                    marker.setPosition(latlng)
+                    map.panTo(latlng)
+                    updatePosition(position.coords.latitude, position.coords.longitude)
+                })
+            }
+
+            marker.addListener('dragend', function(){
+                updatePosition(marker.position.lat(), marker.position.lng())
+            })
+        }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2Q-yuxdDBFlisMhmHSJvJWzfUY5GettA&callback=initMap" type="text/javascript">
+    </script>
+<% include elements/footer %>

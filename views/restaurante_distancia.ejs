@@ -1,0 +1,57 @@
+<% include elements/header %>
+
+<div id="map" style="height: 400px;"></div>
+
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Restaurante</th><th>Distância (<%= results.stats.avgDistance.toFixed(3) %>km)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% results.results.forEach( r => { %>
+                <tr>
+                    <td><%= r.obj.nome %></td>
+                    <td><%= r.dis.toFixed(3)%> km</td>
+                </tr>
+           <% }) %>
+        </tbody>
+    </table>
+</div>
+
+<script>
+        function initMap() {
+            var initialLocation = {lat: <%= lat %>, lng: <%= lng %>};
+            // Create a map object and specify the DOM element for display.
+            var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 16,
+                    center: initialLocation
+            });
+
+            <% results.results.forEach( res => { %>
+                const latlng<%= res.obj._id %> = new google.maps.LatLng(<%=res.obj.loc.coordinates[1]%>, <%=res.obj.loc.coordinates[0]%>)
+                const marker<%= res.obj._id %> = new google.maps.Marker({
+                    position: latlng<%= res.obj._id %>,
+                    map: map
+                })
+            <% }) %>
+
+            if (navigator.geolocation){
+                navigator.geolocation.getCurrentPosition(function(position){
+                    let latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
+                    const marker = new google.maps.Marker({
+                        position: latlng,
+                        map: map
+                    })
+                    marker.setPosition(latlng)
+                    map.panTo(latlng)
+                })
+            }
+
+        }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2Q-yuxdDBFlisMhmHSJvJWzfUY5GettA&callback=initMap" type="text/javascript">
+    </script>
+
+<% include elements/footer %>
