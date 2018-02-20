@@ -1,21 +1,17 @@
 <% include elements/header %>
 
   <div class="container">
-    <h2>Novo restaurante</h2>
+    <h2>Ver distancia</h2>
     <p>
       <a href="/restaurantes">Listar restaurantes</a>
     </p>
-    <form method="post">
-      <div class="form-group">
-        <label for="nome">Nome do restaurante:</label>
-        <input type="text" class="form-control" id="nome" name="nome">
-      </div>
+    <form method="get">
       <div class="form-group">
         <div id="map" style="height: 400px;"></div>
         <input type="hidden" name="lat" id="lat">
         <input type="hidden" name="lng" id="lng">
       </div>
-      <button type="submit" class="btn btn-primary">Salvar</button>
+      <button type="submit" class="btn btn-primary">Ver distâncias</button>
     </form>
   </div>
 
@@ -38,6 +34,9 @@
           var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
           marker.setPosition(latlng)
           map.panTo(latlng)
+
+          document.getElementById('lat').value = position.coords.latitude
+          document.getElementById('lng').value = position.coords.longitude
         })
       }
       

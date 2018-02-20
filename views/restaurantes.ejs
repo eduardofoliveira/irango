@@ -2,7 +2,10 @@
 
     <div class="container">
         <h2>Restaurantes</h2>
-        <p><a href="/restaurantes/novo">Novo restaurante</a></p>
+        <p><a href="/restaurantes/novo">Novo restaurante</a> | <a href="/restaurantes/distancia">Ver distância</a></p>
+        <% restaurantes.forEach(r => { %>
+            <p><%= r.nome %> <a href="/restaurantes/delete/<%= r._id %>">Excluir</a></p>
+        <% }) %>
     </div>
 
 <% include elements/footer %>
