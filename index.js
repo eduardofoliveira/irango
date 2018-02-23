@@ -7,11 +7,13 @@ const MongoClient = mongodb.MongoClient
 const ObjectID = mongodb.ObjectID
 
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 let database
 
 app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({extended: true}))
+app.use(cors())
 app.use(express.static('public'))
 
 const insert = (db, collectionName, doc) => {
@@ -101,6 +103,30 @@ app.get('/restaurantes/distancia', (req, res) => {
     }
 })
 
+app.get('/api/restaurantes/distancia', (req, res) => {
+    const { lat, lng } = req.query
+    if(!lat || !lng){
+        res.send([])
+    }else{
+        database.command({
+            geoNear: 'restaurantes',
+            near: [parseFloat(lng), parseFloat(lat)],
+            spherical: true,
+            distanceMultiplier: 6378.1
+        }, (err, results) => {
+            const positions = results.results.map(r => {
+                return {
+                    lat: r.obj.loc.coordinates[1],
+                    lng: r.obj.loc.coordinates[0],
+                    dis: r.dis,
+                    nome: r.obj.nome
+                }
+            })
+            res.send(positions)
+        })
+    }
+})
+
 MongoClient.connect('mongodb://duduhouse.dyndns.info:5000', (err, client) => {
     if(err){
         console.log({
@@ -118,5 +144,3 @@ MongoClient.connect('mongodb://duduhouse.dyndns.info:5000', (err, client) => {
         })
     }
 })
-
-// Aula 2 44:40
